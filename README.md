@@ -95,5 +95,5 @@ VirtualCFS > exit
 ```
 ## Example Usage Screenshot
 
-![CVFS image](images/Screenshot from 2025-09-19 12-08-23.png)
+![CVFS image](images/Screenshot_from_2025-09-19_12-08-23.png)
 
