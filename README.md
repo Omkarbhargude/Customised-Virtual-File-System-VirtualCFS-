@@ -93,3 +93,7 @@ File type         : Regular file
 
 VirtualCFS > exit
 ```
+## Example Usage Screenshot
+
+![CVFS image](images/Screenshot from 2025-09-19 12-08-23.png)
+
