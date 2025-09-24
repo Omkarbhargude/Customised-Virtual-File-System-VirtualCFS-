@@ -940,8 +940,7 @@ int stat_file(
 //
 void SaveBackUp()
 {
-    int fd = 0,iRet = 0, i = 0;
-    char Buffer[BUFFER_SIZE];
+    int fd = 0;
 
     PINODE temp = NULL;
 
@@ -1000,11 +999,13 @@ int chmod(
         return ERR_NO_INODES;
     }
 
+    // If the fd is NULL
     if(uareaobj.UFDT[fd] == NULL)
     {
         return ERR_FILE_NOT_EXISTS;
     }
 
+    // changing permission of given fd
     uareaobj.UFDT[fd] -> ptrinode -> Permission = mode;
 
     return EXECUTE_SUCCESS;
