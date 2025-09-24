@@ -705,42 +705,47 @@ void ManPage(
     {
         printf("Description : This command is used to terminate the Marvellous CVFS \n");
 
-        printf("Usage : exit\n");
+        printf("Usage       : exit\n");
     }
     else if(strcmp(name, "unlink") == 0)
     {
         printf("Description : This command is used to delete regular file from our file system \n");
 
-        printf("Usage : unlink File_name\n");
-        printf("File_name : The name of file that you want to delete\n");
+        printf("Usage       : unlink File_name\n");
+        printf("File_name   : The name of file that you want to delete\n");
     }
     else if(strcmp(name, "stat") == 0)
     {
         printf("Description : This command is used to display statistical information about the file \n");
 
-        printf("Usage : stat File_name\n");
-        printf("File_name : The name of file whose information you want to display\n");
+        printf("Usage       : stat File_name\n");
+        printf("File_name   : The name of file whose information you want to display\n");
     }
     else if(strcmp(name, "ls") == 0)
     {
         printf("Description : This command is used to list all file names from  directory \n");
 
-        printf("Usage : ls\n");
+        printf("Usage       : ls\n");
     }
     else if(strcmp(name, "write") == 0)
     {
         printf("Description : This command is used to write data into the file \n");
 
-        printf("Usage : write File_Descriptor\n");
+        printf("Usage       : write File_Descriptor\n");
     }
     else if(strcmp(name, "read") == 0)
     {
         printf("Description : This command is used to read the data from the file \n");
 
-        printf("Usage : read File_Descriptor Size\n");
+        printf("Usage       : read File_Descriptor Size\n");
 
         printf("File_Descriptor : Its the value returned by create system call\n");
-        printf("Size : Number of bytes that you want to read\n");
+        printf("Size            : Number of bytes that you want to read\n");
+    }
+    else if(strcmp(name, "chmod") == 0)
+    {
+        printf("Description : This command is used to change the permission of file\n");
+        printf("Usage       : file_descriptor, permission mode [int] \n");
     }
 
     // Add more options here
