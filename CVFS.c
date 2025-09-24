@@ -1,3 +1,19 @@
+/*
+
+    * Project   : Customised Virtual File System
+    * Author    : Omkar Mahadev Bhargude
+    * Date      : 10/08/2025
+    * 
+    * Description:
+    *           This project is a custom implementation of a Virtual File System (VFS) 
+    *           that simulates the core functionality of the Linux file system. It is 
+    *           built entirely in C, with its own custom shell to interact with the virtual 
+    *           environment. The project provides a practical understanding of system calls, 
+    *           file handling, memory management, and OS internals.
+    *
+     
+ */
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //  Description : Header file inclusion
@@ -109,6 +125,7 @@ struct SuperBlock
 {
     int TotaInodes;
     int FreeInodes;
+    int File_Descriptor;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +236,7 @@ void InitialiseSuperBlock()
 {
     superobj.TotaInodes = MAXINODE;
     superobj.FreeInodes = MAXINODE;
+    superobj.File_Descriptor = 0;
     printf("VirtualCFS : SuperBlock initialised successfully\n");
 
 }
@@ -433,7 +451,7 @@ int CreateFile(
 
     // Initialise IIT contents
     strcpy(uareaobj.UFDT[i]->ptrinode->FileName, name);
-    uareaobj.UFDT[i] -> ptrinode ->FileSize = MAXFILESIZE;
+    uareaobj.UFDT[i] -> ptrinode -> FileSize = MAXFILESIZE;
     uareaobj.UFDT[i] -> ptrinode -> ActualFileSize = 0;
     uareaobj.UFDT[i] -> ptrinode -> FileType = REGULARFILE;
     uareaobj.UFDT[i] -> ptrinode -> ReferenceCount = 1;
@@ -443,9 +461,9 @@ int CreateFile(
     // Allocate memory for Buffer
     uareaobj.UFDT[i] -> ptrinode -> Buffer = (char *)malloc((MAXFILESIZE));
 
-
     // Decrement the number of free inodes by 1
     superobj.FreeInodes--;
+    superobj.File_Descriptor++;
 
     // fd [file descriptor]
     return i;
@@ -470,13 +488,14 @@ int CreateFile(
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 //
-//  VirtualCFS >  write file_name or write fd (optional both works same)
+// Dont use file name to write in file
+//  VirtualCFS >  write  write fd 
 //
 
 int write_file(
                     int fd,                     // File descriptor of file
                     char *data,                 // Data that we want to write
-                    int size
+                    int size                    // bytes of data that we want write
             )
 {
     printf("Number of bytes going to write : %d\n",size);
@@ -512,7 +531,7 @@ int write_file(
     }
 
     // write the actual data
-    strncpy(uareaobj.UFDT[fd] -> ptrinode -> Buffer + uareaobj.UFDT[fd] -> WriteOffSet,data,size);
+    memcpy(uareaobj.UFDT[fd] -> ptrinode -> Buffer + uareaobj.UFDT[fd] -> WriteOffSet,data,size);
 
     // Update the writeoffset
     uareaobj.UFDT[fd] -> WriteOffSet = uareaobj.UFDT[fd] -> WriteOffSet + size;
@@ -628,12 +647,12 @@ int UnlinkFile(
                 free(uareaobj.UFDT[i]->ptrinode->Buffer);
 
                 // Reset all values of inode
-                uareaobj.UFDT[i]->ptrinode->FileSize = 0;
-                uareaobj.UFDT[i]->ptrinode->ActualFileSize = 0;
-                uareaobj.UFDT[i]->ptrinode->LinkCount = 0;
-                uareaobj.UFDT[i]->ptrinode->Permission = 0;
-                uareaobj.UFDT[i]->ptrinode->FileType = 0;
-                uareaobj.UFDT[i]->ptrinode->ReferenceCount = 0;
+                uareaobj.UFDT[i] -> ptrinode->FileSize = 0;
+                uareaobj.UFDT[i] -> ptrinode->ActualFileSize = 0;
+                uareaobj.UFDT[i] -> ptrinode->LinkCount = 0;
+                uareaobj.UFDT[i] -> ptrinode->Permission = 0;
+                uareaobj.UFDT[i] -> ptrinode->FileType = 0;
+                uareaobj.UFDT[i] -> ptrinode->ReferenceCount = 0;
 
 
                 // Deallocate memory of file table
@@ -783,6 +802,8 @@ void DisplayHelp()
     printf("read    : Reads data from a file.\n");
     printf("         Displays content stored in the file.\n\n");
 
+    printf("chmod   : Change's the file permissions\n");
+
     printf("---------------------------------------------------------------------------\n");
 
     // To Add
@@ -827,7 +848,7 @@ void ls_File()
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //  Function Name   :   stat_file
-//  Description     :   It is used to diplsy the information about the given files
+//  Description     :   It is used to display the information about the given files
 //  Input           :   file name
 //  Output          :   NONE
 //  Author          :   Omkar Mahadev Bhargude
@@ -900,6 +921,90 @@ int stat_file(
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  Function Name   :   SaveBackup
+//  Description     :   This function is used to backup the Virtual files from RAM to hardisk
+//  Input           :   NONE
+//  Output          :   NONE
+//  Author          :   Omkar Mahadev Bhargude
+//  Date            :   15/08/2025
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+//
+void SaveBackUp()
+{
+    int fd = 0,iRet = 0, i = 0;
+    char Buffer[BUFFER_SIZE];
+
+    PINODE temp = NULL;
+
+    temp = p_head;
+
+    if(p_head == NULL)
+    {
+        return;
+    }
+
+   while(temp != NULL)
+    {
+        if(temp->FileType == REGULARFILE && temp -> ActualFileSize > 0)
+        {
+            fd = creat(temp->FileName, 0777);
+            
+            if(fd == -1)
+            {
+                return;
+            }
+
+            printf("Backing up : %s with %d bytes data\n",temp->FileName,temp->ActualFileSize);
+
+            write(fd,temp->Buffer,temp->ActualFileSize);
+            
+            close(fd);
+
+        }
+            
+        temp = temp -> next;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  Function Name   :   chmod
+//  Description     :   This function is used to change the permissions of the files
+//                      
+//  Input           :   file_descriptor [int] and perimission mode [int]
+//  Output          :   integer
+//  Author          :   Omkar Mahadev Bhargude
+//  Date            :   15/08/2025
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+int chmod(
+            int fd,
+            int mode
+        )
+{
+    
+    PINODE temp = p_head;
+
+    if(p_head == NULL)
+    {
+        return ERR_NO_INODES;
+    }
+
+    if(uareaobj.UFDT[fd] == NULL)
+    {
+        return ERR_FILE_NOT_EXISTS;
+    }
+
+    uareaobj.UFDT[fd] -> ptrinode -> Permission = mode;
+
+    return EXECUTE_SUCCESS;
+  
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -914,9 +1019,7 @@ int main()
     char Command[5][80] = {'\0'};                      // Used to break the commands in sperate block
     char InputBuffer[MAXFILESIZE] = {'\0'};            // Used for writing data in file
     char *EmptyBuffer = NULL;
-    char s_buf[BUFFER_SIZE] = {'\0'};
     PINODE temp = NULL;
-    FILE *fp = NULL;
 
     StartAuxilaryDataInitialisation();
 
@@ -947,6 +1050,8 @@ int main()
             // VirtualCFS > exit
             if(strcmp(Command[0], "exit") == 0)             // Compare to string and return 0 if true
             {
+
+                SaveBackUp();
 
                 printf("Thank you for using VirtualCFS\n");
                 printf("Deallocating all the resources\n");
@@ -1028,7 +1133,7 @@ int main()
                 }
             }
 
-            // VirtualCFS > write demo.txt
+            // VirtualCFS > write 3  
             else if(strcmp(Command[0], "write") == 0)
             {
                 printf("Enter the data into the file : \n");
@@ -1117,6 +1222,26 @@ int main()
                     printf("Data from file is : %s\n",EmptyBuffer);
 
                     free(EmptyBuffer);
+                }
+            }
+
+            // VirtualCFS > chmod fd[int], mode[int]
+            else if(strcmp(Command[0], "chmod") == 0)
+            {
+
+                iRet = chmod(atoi(Command[1]),atoi(Command[2]));
+
+                if(iRet == ERR_NO_INODES)
+                {
+                    printf("[WARN] : File does not exists\n");
+                }
+                else if(iRet == ERR_FILE_NOT_EXISTS)
+                {
+                    printf("[WARN] : File does not exists\n");
+                }
+                else if(iRet == EXECUTE_SUCCESS)
+                {
+                    printf("Permission changed successfully\n");
                 }
             }
             else
