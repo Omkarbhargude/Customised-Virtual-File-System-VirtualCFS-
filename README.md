@@ -67,11 +67,15 @@ This will launch the VirtualCFS shell where you can execute commands like `creat
 
 ---
 
-## Screenshot
 ## 🖼 Screenshots
 
-| Shell Interface | Write Example | Read Example |
-|-----------------|---------------|--------------|
-| ![Shell](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img1.png?raw=true) | ![Features](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img2.png?raw=true) | ![Read](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img4.png?raw=true) |
+### Shell Interface
+![Shell](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img1.png?raw=true)
+
+### Write Example
+![Write](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img2.png?raw=true)
+
+### Read Example
+![Read](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img4.png?raw=true)
 
 
