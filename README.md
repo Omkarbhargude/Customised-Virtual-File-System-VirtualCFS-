@@ -67,30 +67,11 @@ This will launch the VirtualCFS shell where you can execute commands like `creat
 
 ---
 
-## Example Usage
+## Screenshot
+## 🖼 Screenshots
 
-```bash
-VirtualCFS > create demo.txt 3
-[INFO] : File created successfully with fd : 0
+| Shell Interface | Write Example | Read Example |
+|-----------------|---------------|--------------|
+| ![Shell](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img1.png?raw=true) | ![Features](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img2.png?raw=true) | ![Read](https://github.com/Omkarbhargude/Customised-Virtual-File-System-VirtualCFS-/blob/main/image/img4.png?raw=true) |
 
-VirtualCFS > write demo.txt
-Enter the data into the file :
-hello this is my first system programming project
-Number of bytes going to write : 49
-
-VirtualCFS > read 0 49
-[INFO] : Read Operation is successful...
-Data from file is : hello this is my first system programming project
-
-VirtualCFS > stat demo.txt
------------- Statistical Information of file -----------
-File name         : demo.txt
-File size on Disk : 100
-Actual File size  : 49
-Link count        : 1
-File permission   : Read + Write
-File type         : Regular file
-
-VirtualCFS > exit
-```
 
